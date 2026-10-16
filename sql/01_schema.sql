@@ -49,3 +49,4 @@ CREATE TABLE payments (
     status VARCHAR(20) NOT NULL DEFAULT 'success' CHECK ( status IN ('success', 'pending', 'refunded', 'failed') )
 );
 
+
