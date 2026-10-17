@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS payments CASCADE;
-DROP TABLE IF EXISTS enrollements CASCADE;
+DROP TABLE IF EXISTS enrollments CASCADE;
 DROP TABLE IF EXISTS courses CASCADE;
 DROP TABLE IF EXISTS students CASCADE;
 DROP TABLE IF EXISTS teachers CASCADE;
@@ -26,7 +26,8 @@ CREATE TABLE courses (
     title VARCHAR(150) NOT NULL,
     description TEXT,
     teacher_id INT NOT NULL REFERENCES teachers(teacher_id) ON DELETE RESTRICT,
-    price NUMERIC(10, 2) NOT NULL CHECK ( PRICE >= 0 ),
+    price NUMERIC(10, 2) NOT NULL CHECK ( price >= 0 ),
+    duration_hours INT NOT NULL CHECK (duration_hours > 0),
     level VARCHAR(20) NOT NULL CHECK ( level IN ('beginner', 'intermediate', 'advanced')),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -45,8 +46,7 @@ CREATE TABLE payments (
     payment_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     enrollment_id INT NOT NULL REFERENCES enrollments(enrollment_id) ON DELETE RESTRICT,
     amount NUMERIC(10, 2) NOT NULL CHECK ( amount > 0 ),
+    paid_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     method VARCHAR(20) NOT NULL CHECK ( method IN ('card', 'sbp', 'paypal') ),
     status VARCHAR(20) NOT NULL DEFAULT 'success' CHECK ( status IN ('success', 'pending', 'refunded', 'failed') )
 );
-
-
