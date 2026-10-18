@@ -1,0 +1,22 @@
+Sort  (cost=58.33..58.47 rows=57 width=354) (actual time=0.446..0.448 rows=15 loops=1)
+  Sort Key: (sum(payments.amount)) DESC
+  Sort Method: quicksort  Memory: 25kB
+  ->  HashAggregate  (cost=54.11..56.66 rows=57 width=354) (actual time=0.435..0.440 rows=15 loops=1)
+        Group Key: courses.course_id
+        Filter: (sum(payments.amount) > '50000'::numeric)
+        Batches: 1  Memory Usage: 40kB
+        ->  Hash Join  (cost=31.18..50.85 rows=653 width=327) (actual time=0.116..0.342 rows=653 loops=1)
+              Hash Cond: (enrollments.course_id = courses.course_id)
+              ->  Hash Join  (cost=17.35..35.27 rows=653 width=9) (actual time=0.090..0.245 rows=653 loops=1)
+                    Hash Cond: (payments.enrollment_id = enrollments.enrollment_id)
+                    ->  Seq Scan on payments  (cost=0.00..16.19 rows=653 width=9) (actual time=0.005..0.083 rows=653 loops=1)
+                          Filter: ((status)::text = 'success'::text)
+                          Rows Removed by Filter: 82
+                    ->  Hash  (cost=10.49..10.49 rows=549 width=8) (actual time=0.081..0.081 rows=549 loops=1)
+                          Buckets: 1024  Batches: 1  Memory Usage: 30kB
+                          ->  Seq Scan on enrollments  (cost=0.00..10.49 rows=549 width=8) (actual time=0.003..0.043 rows=549 loops=1)
+              ->  Hash  (cost=11.70..11.70 rows=170 width=322) (actual time=0.023..0.024 rows=15 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                    ->  Seq Scan on courses  (cost=0.00..11.70 rows=170 width=322) (actual time=0.009..0.011 rows=15 loops=1)
+Planning Time: 0.233 ms
+Execution Time: 0.479 ms
